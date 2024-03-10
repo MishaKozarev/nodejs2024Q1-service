@@ -35,6 +35,12 @@ export class ArtistService {
     const artist = this.findArtistById(id);
     const artistIndex = this.dataBaseService.artists.indexOf(artist);
     this.dataBaseService.artists.splice(artistIndex, 1);
+    this.dataBaseService.tracks
+      .filter((track) => track.artistId === artist.id)
+      .forEach((track) => (track.artistId = null));
+    this.dataBaseService.albums
+      .filter((album) => album.artistId === artist.id)
+      .forEach((album) => (album.artistId = null));
   }
 
   private findArtistById(id: string): Artist {

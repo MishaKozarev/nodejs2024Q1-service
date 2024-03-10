@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Header,
+  HttpCode,
   Param,
   ParseUUIDPipe,
   Post,
@@ -46,5 +48,11 @@ export class ArtistController {
     @Body() dto: UpdateArtistDto,
   ): Artist {
     return this.artistService.updateArtistById(id, dto);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  deleteArtistById(@Param('id', ParseUUIDPipe) id: string): void {
+    this.artistService.deleteArtistById(id);
   }
 }

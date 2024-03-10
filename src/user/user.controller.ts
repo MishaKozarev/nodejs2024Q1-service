@@ -30,7 +30,7 @@ export class UserController {
 
   @Get('id')
   @Header('Content-Type', 'application/json')
-  getUserByAd(@Param('id') id: string): User {
+  getUserById(@Param('id') id: string): User {
     const user = this.userService.getUserById(id);
     return plainToClass(User, user);
   }
@@ -46,7 +46,10 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   @Put(':id')
   @Header('Content-Type', 'application/json')
-  updateUserById(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+  updateUserById(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateUserDto,
+  ): User {
     const user = this.userService.updateUserById(id, dto);
     return plainToClass(User, user);
   }

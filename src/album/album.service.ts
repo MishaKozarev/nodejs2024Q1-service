@@ -39,10 +39,6 @@ export class AlbumService {
     const albumIndex = this.dataBaseService.albums.indexOf(album);
 
     this.dataBaseService.albums.splice(albumIndex, 1);
-  }
-
-  private findArtistById(id: string): Album {
-    const album = this.dataBaseService.albums.find((album) => album.id === id);
     this.dataBaseService.tracks
       .filter((track) => track.albumId === album.id)
       .forEach((track) => (track.albumId = null));
@@ -56,6 +52,10 @@ export class AlbumService {
         this.dataBaseService.favorites.albums.indexOf(albumInFavorites);
       this.dataBaseService.favorites.albums.splice(albumIndex, 1);
     }
+  }
+
+  private findArtistById(id: string): Album {
+    const album = this.dataBaseService.albums.find((album) => album.id === id);
 
     if (!album) {
       throw new NotFoundException('Album with this ID not found');

@@ -63,5 +63,4 @@ export class FavoritesService {
 
     return entity;
   }
-  2;
 }

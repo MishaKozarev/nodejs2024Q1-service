@@ -1,21 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
+import * as dotenv from 'dotenv';
+import * as YAML from 'yamljs';
+
+dotenv.config();
+const PORT = process.env.PORT || 4000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const config = new DocumentBuilder()
-    .setTitle('home-library')
-    .setDescription(
-      'Home Library - this Service where users can create, read, update, delete data!',
-    )
-    .setVersion('1.0')
-    .addTag('music')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = YAML.load('doc/api.yaml');
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(4000);
+  await app.listen(PORT);
 }
 bootstrap();

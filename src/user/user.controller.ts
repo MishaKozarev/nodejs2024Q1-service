@@ -15,7 +15,7 @@ import {
 import { plainToClass } from 'class-transformer';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { User } from './entities/user.entity';
+import { User } from '../data-base/entities/user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')

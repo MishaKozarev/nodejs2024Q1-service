@@ -13,7 +13,7 @@ import {
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dbo/createArtist.dbo';
 import { UpdateArtistDto } from './dbo/updateArtist.dbo';
-import { Artist } from './entities/artist.entity';
+import { Artist } from '../data-base/entities/artist.entity';
 
 @Controller('artist')
 export class ArtistController {

@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTrackDto } from './dbo/createTrack.dbo';
 import { UpdateTrackDto } from './dbo/updateTrack.dbo';
-import { Track } from './entities/track.entity';
+import { Track } from '../data-base/entities/track.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { DataBaseService } from '../data-base/data-base.service';
 
 @Injectable()
 export class TrackService {
-  private tracks: Track[] = [];
+  constructor(private dataBaseService: DataBaseService) {}
 
   public getAllTrack(): Track[] {
-    return this.tracks;
+    return this.dataBaseService.tracks;
   }
 
   public getTrackById(id: string): Track {
@@ -21,7 +22,7 @@ export class TrackService {
       id: uuidv4(),
       ...dto,
     };
-    this.tracks.push(track);
+    this.dataBaseService.tracks.push(track);
     return track;
   }
 
@@ -32,12 +33,12 @@ export class TrackService {
 
   public deleteTrackById(id: string): void {
     const track = this.findTrackById(id);
-    const trackIndex = this.tracks.indexOf(track);
-    this.tracks.splice(trackIndex, 1);
+    const trackIndex = this.dataBaseService.tracks.indexOf(track);
+    this.dataBaseService.tracks.splice(trackIndex, 1);
   }
 
   private findTrackById(id: string): Track {
-    const track = this.tracks.find((track) => track.id === id);
+    const track = this.dataBaseService.tracks.find((track) => track.id === id);
     if (!track) {
       throw new NotFoundException('Track with this ID not found');
     }

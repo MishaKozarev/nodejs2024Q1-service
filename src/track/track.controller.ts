@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { CreateTrackDto } from './dbo/createTrack.dbo';
 import { UpdateTrackDto } from './dbo/updateTrack.dbo';
-import { Track } from './entities/track.entity';
+import { Track } from '../data-base/entities/track.entity';
 import { TrackService } from './track.service';
 
 @Controller('track')

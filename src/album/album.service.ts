@@ -47,6 +47,16 @@ export class AlbumService {
       .filter((track) => track.albumId === album.id)
       .forEach((track) => (track.albumId = null));
 
+    const albumInFavorites = this.dataBaseService.favorites.albums.find(
+      (album) => album.id === id,
+    );
+
+    if (albumInFavorites) {
+      const albumIndex =
+        this.dataBaseService.favorites.albums.indexOf(albumInFavorites);
+      this.dataBaseService.favorites.albums.splice(albumIndex, 1);
+    }
+
     if (!album) {
       throw new NotFoundException('Album with this ID not found');
     }

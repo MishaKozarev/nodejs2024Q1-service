@@ -35,6 +35,15 @@ export class TrackService {
     const track = this.findTrackById(id);
     const trackIndex = this.dataBaseService.tracks.indexOf(track);
     this.dataBaseService.tracks.splice(trackIndex, 1);
+    const trackInFavorites = this.dataBaseService.favorites.tracks.find(
+      (track) => track.id === id,
+    );
+
+    if (trackInFavorites) {
+      const trackIndex =
+        this.dataBaseService.favorites.tracks.indexOf(trackInFavorites);
+      this.dataBaseService.favorites.tracks.splice(trackIndex, 1);
+    }
   }
 
   private findTrackById(id: string): Track {

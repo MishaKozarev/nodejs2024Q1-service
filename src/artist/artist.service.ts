@@ -41,6 +41,16 @@ export class ArtistService {
     this.dataBaseService.albums
       .filter((album) => album.artistId === artist.id)
       .forEach((album) => (album.artistId = null));
+
+    const artistInFavorites = this.dataBaseService.favorites.artists.find(
+      (artist) => artist.id === id,
+    );
+
+    if (artistInFavorites) {
+      const artistIndex =
+        this.dataBaseService.favorites.artists.indexOf(artistInFavorites);
+      this.dataBaseService.favorites.artists.splice(artistIndex, 1);
+    }
   }
 
   private findArtistById(id: string): Artist {

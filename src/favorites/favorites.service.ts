@@ -13,11 +13,11 @@ import { DataBaseService } from '../data-base/data-base.service';
 export class FavoritesService {
   constructor(private dataBaseService: DataBaseService) {}
 
-  public findAll(): Favorites {
+  public getArtistAll(): Favorites {
     return this.dataBaseService.favorites;
   }
 
-  public add(entityName: Entity, id: string): void {
+  public addFavorites(entityName: Entity, id: string): void {
     const entity = this.findEntity(entityName, id);
 
     const entityInFavorites = this.dataBaseService.favorites[entityName].find(
@@ -29,7 +29,7 @@ export class FavoritesService {
     }
   }
 
-  public delete(entityName: Entity, id: string): void {
+  public deleteFavorites(entityName: Entity, id: string): void {
     const entity = this.dataBaseService.favorites[entityName].find(
       (entity: Artist | Album | Track) => entity.id === id,
     );

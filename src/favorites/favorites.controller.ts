@@ -19,19 +19,17 @@ export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  @Header('Content-Type', 'application/json')
-  findAll(): Favorites {
-    return this.favoritesService.findAll();
+  getArtistAll(): Favorites {
+    return this.favoritesService.getArtistAll();
   }
 
   @Post(':entity/:id')
-  @Header('Content-Type', 'application/json')
-  add(
+  addFavorites(
     @Param('entity') entity: string,
     @Param('id', ParseUUIDPipe) id: string,
   ): string {
     if (this.entities.includes(entity)) {
-      this.favoritesService.add(this.convertToPlural(entity), id);
+      this.favoritesService.addFavorites(this.convertEntity(entity), id);
       return `${
         entity[0].toUpperCase + entity.slice(1)
       } successfully added to favorites`;
@@ -42,12 +40,12 @@ export class FavoritesController {
 
   @Delete(':entity/:id')
   @HttpCode(204)
-  delete(
+  deleteFavorites(
     @Param('entity') entity: string,
     @Param('id', ParseUUIDPipe) id: string,
   ): string {
     if (this.entities.includes(entity)) {
-      this.favoritesService.delete(this.convertToPlural(entity), id);
+      this.favoritesService.deleteFavorites(this.convertEntity(entity), id);
       return `${
         entity[0].toUpperCase + entity.slice(1)
       } successfully deleted from favorites`;
@@ -56,7 +54,7 @@ export class FavoritesController {
     }
   }
 
-  private convertToPlural(entityName: string): Entity {
+  private convertEntity(entityName: string): Entity {
     return `${entityName}s` as Entity;
   }
 }

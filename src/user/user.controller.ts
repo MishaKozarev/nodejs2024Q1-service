@@ -6,14 +6,16 @@ import {
   Header,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { UserResponse } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -21,33 +23,37 @@ export class UserController {
   constructor(private userService: UserService) {}
   @Get()
   @Header('Content-Type', 'application/json')
-  getAllUsers(): UserResponse[] {
-    return this.userService.getAllUsers();
+  getAllUsers(): User[] {
+    const users = this.userService.getAllUsers();
+    return users.map((user) => plainToClass(User, user));
   }
 
   @Get('id')
   @Header('Content-Type', 'application/json')
-  getUserByAd(@Param('id') id: string): UserResponse {
-    return this.userService.getUserById(id);
+  getUserByAd(@Param('id') id: string): User {
+    const user = this.userService.getUserById(id);
+    return plainToClass(User, user);
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
   @Header('Content-Type', 'application/json')
-  createUserById(@Body() dto: CreateUserDto): UserResponse {
-    return this.userService.createUserById(dto);
+  createUserById(@Body() dto: CreateUserDto): User {
+    const user = this.userService.createUserById(dto);
+    return plainToClass(User, user);
   }
 
   @UsePipes(new ValidationPipe())
   @Put(':id')
   @Header('Content-Type', 'application/json')
-  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    return this.userService.updateUserById(id, dto);
+  updateUserById(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    const user = this.userService.updateUserById(id, dto);
+    return plainToClass(User, user);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id') id: string) {
-    return this.userService.deleteUserById(id);
+  deleteUserById(@Param('id', ParseUUIDPipe) id: string): void {
+    this.userService.deleteUserById(id);
   }
 }

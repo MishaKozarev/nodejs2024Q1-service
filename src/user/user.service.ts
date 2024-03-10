@@ -1,45 +1,27 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { isUUID } from 'class-validator';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { User, UserResponse } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
   private users: User[] = [];
 
-  private convertUser(user: User): UserResponse {
-    const { password, ...rest } = user;
-    return rest;
-  }
-
   private findUserById(id: string): User {
-    if (!id || !isUUID(id)) {
-      throw new BadRequestException('ID is not an UUID type');
-    }
     const user = this.users.find((user) => user.id === id);
-    if (!user) {
-      throw new NotFoundException(`User with ID=${id} not found`);
-    }
     return user;
   }
 
-  public getAllUsers(): UserResponse[] {
-    return this.users.map((user) => this.convertUser(user));
+  public getAllUsers(): User[] {
+    return this.users;
   }
 
-  public getUserById(id: string): UserResponse {
-    const currentUser = this.findUserById(id);
-    return this.convertUser(currentUser);
+  public getUserById(id: string): User {
+    return this.findUserById(id);
   }
 
-  public createUserById(dto: CreateUserDto): UserResponse {
+  public createUserById(dto: CreateUserDto): User {
     const { login, password } = dto;
 
     const user: User = {
@@ -51,25 +33,25 @@ export class UserService {
       updatedAt: Date.now(),
     };
     this.users.push(user);
-    return this.convertUser(user);
+    return user;
   }
 
-  public updateUserById(id: string, dto: UpdateUserDto): UserResponse {
+  public updateUserById(id: string, dto: UpdateUserDto): User {
     const { oldPassword, newPassword } = dto;
-    const currentUser = this.findUserById(id);
-    const { password } = currentUser;
+    const user = this.findUserById(id);
+    const { password } = user;
     if (oldPassword !== password) {
       throw new ForbiddenException('Old password is incorrect');
     }
-    currentUser.password = newPassword;
-    currentUser.version += 1;
-    currentUser.updatedAt = Date.now();
-    return this.convertUser(currentUser);
+    user.password = newPassword;
+    user.version += 1;
+    user.updatedAt = Date.now();
+    return user;
   }
 
   public deleteUserById(id: string): void {
-    const currentUser = this.findUserById(id);
-    const userIndex = this.users.indexOf(currentUser);
+    const user = this.findUserById(id);
+    const userIndex = this.users.indexOf(user);
     this.users.splice(userIndex, 1);
   }
 }

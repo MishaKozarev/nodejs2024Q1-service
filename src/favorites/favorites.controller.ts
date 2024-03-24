@@ -8,7 +8,7 @@ import {
   ParseUUIDPipe,
   Post,
 } from '@nestjs/common';
-import { Entity, Favorites } from 'src/data-base/entities/favorites.entity';
+import { Entity } from 'src/entities/favorites.entity';
 import { FavoritesService } from './favorites.service';
 
 @Controller('favorites')
@@ -18,20 +18,17 @@ export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  getArtistAll(): Favorites {
+  getArtistAll() {
     return this.favoritesService.getArtistAll();
   }
 
   @Post(':entity/:id')
-  addFavorites(
+  async addFavorites(
     @Param('entity') entity: string,
     @Param('id', ParseUUIDPipe) id: string,
-  ): string {
+  ) {
     if (this.entities.includes(entity)) {
-      this.favoritesService.addFavorites(this.convertEntity(entity), id);
-      return `${
-        entity[0].toUpperCase + entity.slice(1)
-      } successfully added to favorites`;
+      return this.favoritesService.addFavorites(entity as Entity, id);
     } else {
       throw new BadRequestException('Invalid entity');
     }
@@ -39,21 +36,14 @@ export class FavoritesController {
 
   @Delete(':entity/:id')
   @HttpCode(204)
-  deleteFavorites(
+  async deleteFavorites(
     @Param('entity') entity: string,
     @Param('id', ParseUUIDPipe) id: string,
-  ): string {
+  ) {
     if (this.entities.includes(entity)) {
-      this.favoritesService.deleteFavorites(this.convertEntity(entity), id);
-      return `${
-        entity[0].toUpperCase + entity.slice(1)
-      } successfully deleted from favorites`;
+      return await this.favoritesService.deleteFavorites(entity as Entity, id);
     } else {
       throw new BadRequestException('Invalid entity');
     }
-  }
-
-  private convertEntity(entityName: string): Entity {
-    return `${entityName}s` as Entity;
   }
 }

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { DataBaseModule } from '../data-base/data-base.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { TrackController } from './track.controller';
 import { TrackService } from './track.service';
 
 @Module({
-  imports: [DataBaseModule],
+  imports: [PrismaModule],
   controllers: [TrackController],
   providers: [TrackService],
 })

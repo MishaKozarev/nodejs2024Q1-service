@@ -12,7 +12,6 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { Album } from '../data-base/entities/album.entity';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/createAlbum.dto';
 import { UpdateAlbumDto } from './dto/updateAlbum.dto';
@@ -23,30 +22,27 @@ export class AlbumController {
 
   @Get()
   @Header('Content-Type', 'application/json')
-  getArtistAll(): Album[] {
+  getArtistAll() {
     return this.albumService.getArtistAll();
   }
 
   @Get(':id')
   @Header('Content-Type', 'application/json')
-  findOne(@Param('id', ParseUUIDPipe) id: string): Album {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.albumService.getArtistById(id);
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
   @Header('Content-Type', 'application/json')
-  create(@Body() dto: CreateAlbumDto): Album {
+  create(@Body() dto: CreateAlbumDto) {
     return this.albumService.createArtistById(dto);
   }
 
   @UsePipes(new ValidationPipe())
   @Put(':id')
   @Header('Content-Type', 'application/json')
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateAlbumDto,
-  ): Album {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateAlbumDto) {
     return this.albumService.updateArtistById(id, dto);
   }
 

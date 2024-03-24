@@ -1,4 +1,4 @@
-# Home Library Service
+# Home Library Service - Misha Kozarev
 
 ## Prerequisites
 

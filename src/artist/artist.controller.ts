@@ -51,7 +51,7 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(204)
-  deleteArtistById(@Param('id', ParseUUIDPipe) id: string): void {
-    this.artistService.deleteArtistById(id);
+  deleteArtistById(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this.artistService.deleteArtistById(id);
   }
 }

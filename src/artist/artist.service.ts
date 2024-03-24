@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArtistDto } from './dbo/createArtist.dbo';
 import { UpdateArtistDto } from './dbo/updateArtist.dbo';
-import { Artist } from '../entities/artist.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()

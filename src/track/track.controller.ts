@@ -22,33 +22,36 @@ export class TrackController {
 
   @Get()
   @Header('Content-Type', 'application/json')
-  getAllTrack() {
-    return this.trackService.getAllTrack();
+  async getAllTrack() {
+    return await this.trackService.getAllTrack();
   }
 
   @Get(':id')
   @Header('Content-Type', 'application/json')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.trackService.getTrackById(id);
+  async getTrackById(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.trackService.getTrackById(id);
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
   @Header('Content-Type', 'application/json')
-  create(@Body() dto: CreateTrackDto) {
-    return this.trackService.createTrackById(dto);
+  async createTrackById(@Body() dto: CreateTrackDto) {
+    return await this.trackService.createTrackById(dto);
   }
 
   @UsePipes(new ValidationPipe())
   @Put(':id')
   @Header('Content-Type', 'application/json')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateTrackDto) {
-    return this.trackService.updateTrackById(id, dto);
+  async updateTrackById(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateTrackDto,
+  ) {
+    return await this.trackService.updateTrackById(id, dto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id', ParseUUIDPipe) id: string): void {
-    this.trackService.deleteTrackById(id);
+  async deleteTrackById(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.trackService.deleteTrackById(id);
   }
 }

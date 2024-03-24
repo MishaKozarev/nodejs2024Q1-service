@@ -28,27 +28,30 @@ export class AlbumController {
 
   @Get(':id')
   @Header('Content-Type', 'application/json')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
+  getArtistById(@Param('id', ParseUUIDPipe) id: string) {
     return this.albumService.getArtistById(id);
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
   @Header('Content-Type', 'application/json')
-  create(@Body() dto: CreateAlbumDto) {
+  createArtistById(@Body() dto: CreateAlbumDto) {
     return this.albumService.createArtistById(dto);
   }
 
   @UsePipes(new ValidationPipe())
   @Put(':id')
   @Header('Content-Type', 'application/json')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateAlbumDto) {
+  updateArtistById(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateAlbumDto,
+  ) {
     return this.albumService.updateArtistById(id, dto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteArtistById(@Param('id', ParseUUIDPipe) id: string): void {
-    this.albumService.deleteArtistById(id);
+  deleteArtistById(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this.albumService.deleteArtistById(id);
   }
 }

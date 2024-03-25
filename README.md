@@ -8,7 +8,13 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/MishaKozarev/nodejs2024Q1-service.git
+```
+
+## Switch branch
+
+```
+git checkout docker-db-orm
 ```
 
 ## Installing NPM modules

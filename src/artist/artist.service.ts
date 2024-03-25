@@ -1,65 +1,51 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from './dbo/createArtist.dbo';
 import { UpdateArtistDto } from './dbo/updateArtist.dbo';
-import { Artist } from '../data-base/entities/artist.entity';
-import { DataBaseService } from '../data-base/data-base.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(private dataBaseService: DataBaseService) {}
+  constructor(private prisma: PrismaService) {}
 
-  public getArtistAll(): Artist[] {
-    return this.dataBaseService.artists;
+  public async getArtistAll() {
+    return await this.prisma.artist.findMany();
   }
 
-  public getArtistById(id: string): Artist {
-    return this.findArtistById(id);
+  public async getArtistById(id: string) {
+    return await this.findArtistById(id);
   }
 
-  public createArtistById(dto: CreateArtistDto): Artist {
-    const artist: Artist = {
-      id: uuidv4(),
-      ...dto,
-    };
-    this.dataBaseService.artists.push(artist);
-    return artist;
+  public async createArtistById(dto: CreateArtistDto) {
+    return await this.prisma.artist.create({
+      data: dto,
+    });
   }
 
-  public updateArtistById(id: string, dto: UpdateArtistDto): Artist {
-    const artist = this.findArtistById(id);
-    return Object.assign(artist, dto);
+  public async updateArtistById(id: string, dto: UpdateArtistDto) {
+    await this.findArtistById(id);
+    return await this.prisma.artist.update({
+      where: { id },
+      data: dto,
+    });
   }
 
-  public deleteArtistById(id: string): void {
-    const artist = this.findArtistById(id);
-    const artistIndex = this.dataBaseService.artists.indexOf(artist);
-    this.dataBaseService.artists.splice(artistIndex, 1);
-    this.dataBaseService.tracks
-      .filter((track) => track.artistId === artist.id)
-      .forEach((track) => (track.artistId = null));
-    this.dataBaseService.albums
-      .filter((album) => album.artistId === artist.id)
-      .forEach((album) => (album.artistId = null));
+  public async deleteArtistById(id: string) {
+    await this.findArtistById(id);
 
-    const artistInFavorites = this.dataBaseService.favorites.artists.find(
-      (artist) => artist.id === id,
-    );
-
-    if (artistInFavorites) {
-      const artistIndex =
-        this.dataBaseService.favorites.artists.indexOf(artistInFavorites);
-      this.dataBaseService.favorites.artists.splice(artistIndex, 1);
-    }
+    await this.prisma.artist.delete({
+      where: { id },
+    });
   }
 
-  private findArtistById(id: string): Artist {
-    const artist = this.dataBaseService.artists.find(
-      (artist) => artist.id === id,
-    );
+  private async findArtistById(id: string) {
+    const artist = await this.prisma.artist.findUnique({
+      where: { id },
+    });
+
     if (!artist) {
-      throw new NotFoundException(`Artist with ID = ${id} not found`);
+      throw new NotFoundException('Artist with this ID not found');
     }
+
     return artist;
   }
 }

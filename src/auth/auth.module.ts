@@ -6,6 +6,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from 'src/user/user.module';
 import { JwtAuthGuard } from './jwt/jwt-auth.guards';
+import { CustomLoggerService } from 'src/logger/logger.service';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { JwtAuthGuard } from './jwt/jwt-auth.guards';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    CustomLoggerService,
   ],
 })
 export class AuthModule {}

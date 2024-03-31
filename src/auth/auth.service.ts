@@ -1,6 +1,8 @@
 import {
   ForbiddenException,
+  HttpStatus,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -9,39 +11,59 @@ import { SignUpDto } from './dto/signup.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from 'jsonwebtoken';
+import { CustomLoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly customLoggerService: CustomLoggerService,
   ) {}
 
   public async signUp(dto: SignUpDto) {
-    return await this.userService.createUserById(dto);
+    try {
+      return await this.userService.createUserById(dto);
+    } catch (e) {
+      this.customLoggerService.error({
+        message: 'Error while signing up',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        errorResponse: e.message,
+      });
+      throw new InternalServerErrorException('Error during signing up');
+    }
   }
 
   public async login(dto: LoginDto) {
-    const { login, password } = dto;
-    const user = await this.userService.findOneByLogin(login);
-    if (user) {
-      const isCorrectPassword = bcrypt.compare(password, user.password);
-      if (!isCorrectPassword) {
-        throw new ForbiddenException('Invalid credentials');
+    try {
+      const { login, password } = dto;
+      const user = await this.userService.findOneByLogin(login);
+      if (user) {
+        const isCorrectPassword = bcrypt.compare(password, user.password);
+        if (!isCorrectPassword) {
+          throw new ForbiddenException('Invalid credentials');
+        }
+        const { id, login } = user;
+        const jwtPayload: JwtPayload = { userId: id, login };
+        const accessToken = this.jwtService.sign(jwtPayload, {
+          expiresIn: process.env.TOKEN_EXPIRE_TIME,
+          secret: process.env.JWT_SECRET_KEY,
+        });
+        const refreshToken = this.jwtService.sign(jwtPayload, {
+          expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
+          secret: process.env.JWT_SECRET_KEY,
+        });
+        return { accessToken, refreshToken };
       }
-      const { id, login } = user;
-      const jwtPayload: JwtPayload = { userId: id, login };
-      const accessToken = this.jwtService.sign(jwtPayload, {
-        expiresIn: process.env.TOKEN_EXPIRE_TIME,
-        secret: process.env.JWT_SECRET_KEY,
+      throw new ForbiddenException('User not found');
+    } catch (e) {
+      this.customLoggerService.error({
+        message: 'Error during logging in',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        errorResponse: e.message,
       });
-      const refreshToken = this.jwtService.sign(jwtPayload, {
-        expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
-        secret: process.env.JWT_SECRET_KEY,
-      });
-      return { accessToken, refreshToken };
+      throw new InternalServerErrorException('Error during logging in');
     }
-    throw new ForbiddenException('User not found');
   }
 
   public async refreshToken(token: string) {
@@ -62,8 +84,13 @@ export class AuthService {
       });
 
       return { accessToken, refreshToken };
-    } catch {
-      throw new ForbiddenException('Refresh token is invalid or expired');
+    } catch (e) {
+      this.customLoggerService.error({
+        message: 'Error while refreshing tokens',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        errorResponse: e.message,
+      });
+      throw new InternalServerErrorException('Error during refreshing tokens');
     }
   }
 }

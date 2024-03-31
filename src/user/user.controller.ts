@@ -12,10 +12,8 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { User } from '../data-base/entities/user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -23,40 +21,36 @@ export class UserController {
   constructor(private userService: UserService) {}
   @Get()
   @Header('Content-Type', 'application/json')
-  getAllUsers(): User[] {
-    const users = this.userService.getAllUsers();
-    return users.map((user) => plainToClass(User, user));
+  async getAllUsers() {
+    return await this.userService.getAllUsers();
   }
 
   @Get('id')
   @Header('Content-Type', 'application/json')
-  getUserById(@Param('id') id: string): User {
-    const user = this.userService.getUserById(id);
-    return plainToClass(User, user);
+  async getUserById(@Param('id') id: string) {
+    return await this.userService.getUserById(id);
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
   @Header('Content-Type', 'application/json')
-  createUserById(@Body() dto: CreateUserDto): User {
-    const user = this.userService.createUserById(dto);
-    return plainToClass(User, user);
+  async createUserById(@Body() dto: CreateUserDto) {
+    return await this.userService.createUserById(dto);
   }
 
   @UsePipes(new ValidationPipe())
   @Put(':id')
   @Header('Content-Type', 'application/json')
-  updateUserById(
+  async updateUserById(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateUserDto,
-  ): User {
-    const user = this.userService.updateUserById(id, dto);
-    return plainToClass(User, user);
+  ) {
+    return await this.userService.updateUserById(id, dto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteUserById(@Param('id', ParseUUIDPipe) id: string): void {
-    this.userService.deleteUserById(id);
+  async deleteUserById(@Param('id', ParseUUIDPipe) id: string) {
+    await this.userService.deleteUserById(id);
   }
 }

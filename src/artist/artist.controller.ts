@@ -15,7 +15,6 @@ import {
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dbo/createArtist.dbo';
 import { UpdateArtistDto } from './dbo/updateArtist.dbo';
-import { Artist } from '../data-base/entities/artist.entity';
 
 @Controller('artist')
 export class ArtistController {
@@ -23,20 +22,20 @@ export class ArtistController {
 
   @Get()
   @Header('Content-Type', 'application/json')
-  getArtistAll(): Artist[] {
+  getArtistAll() {
     return this.artistService.getArtistAll();
   }
 
   @Get(':id')
   @Header('Content-Type', 'application/json')
-  getArtistById(@Param('id', ParseUUIDPipe) id: string): Artist {
+  getArtistById(@Param('id', ParseUUIDPipe) id: string) {
     return this.artistService.getArtistById(id);
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
   @Header('Content-Type', 'application/json')
-  createArtistById(@Body() dto: CreateArtistDto): Artist {
+  createArtistById(@Body() dto: CreateArtistDto) {
     return this.artistService.createArtistById(dto);
   }
 
@@ -46,13 +45,13 @@ export class ArtistController {
   updateArtistById(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateArtistDto,
-  ): Artist {
+  ) {
     return this.artistService.updateArtistById(id, dto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteArtistById(@Param('id', ParseUUIDPipe) id: string): void {
-    this.artistService.deleteArtistById(id);
+  deleteArtistById(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this.artistService.deleteArtistById(id);
   }
 }

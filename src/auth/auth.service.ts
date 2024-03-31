@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDto } from './auth/dto/create.dto';
-import { UpdateDto } from './auth/dto/update.dto';
+import { CreateDto } from './dto/create.dto';
+import { UpdateDto } from './dto/update.dto';
 
 @Injectable()
-export class AppService {
+export class AuthService {
   public findAll() {
     return 'find all';
   }

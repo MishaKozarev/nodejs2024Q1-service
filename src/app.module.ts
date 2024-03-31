@@ -7,6 +7,7 @@ import { AlbumModule } from './album/album.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { CustomLoggerService } from './logger/logger.service';
 
 @Module({
   imports: [
@@ -19,5 +20,6 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
   ],
+  providers: [CustomLoggerService],
 })
 export class AppModule {}

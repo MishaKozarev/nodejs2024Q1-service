@@ -1,28 +1,40 @@
-import { Injectable } from '@nestjs/common';
-import { CreateDto } from './dto/create.dto';
-import { UpdateDto } from './dto/update.dto';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
+import { SignUpDto } from './dto/signup.dto';
+import * as bcrypt from 'bcrypt';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
-  public findAll() {
-    return 'find all';
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  public async signUp(dto: SignUpDto) {
+    const { login, password } = dto;
+    const hash = await bcrypt.hash(password, 10);
+
+    const user = await this.userService.createUserById({
+      login,
+      password: hash,
+    });
+    return user;
   }
 
-  public findOne(id: string) {
-    return 'find one ' + id;
-  }
+  public async login(dto: LoginDto) {
+    const { login, password } = dto;
 
-  public create(dto: CreateDto) {
-    console.log(dto);
-    return 'user created';
-  }
+    const user = await this.userService.getUserById(login);
 
-  public update(id: string, dto: UpdateDto) {
-    console.log(dto);
-    return 'user updated' + id;
-  }
+    if (user) {
+      const isCorrectPassword = bcrypt.compare(password, user.password);
 
-  public delete(id: string) {
-    return 'user deleted' + id;
+      if (!isCorrectPassword) {
+        throw new ForbiddenException('Invalid credentials');
+      }
+    }
+    throw new ForbiddenException('User not found');
   }
 }
